@@ -83,4 +83,5 @@ def retrain_and_predict(ticker):
     prev_close = stock_data['Close'][-2]  # close of previous day
     predicted_next_day_close = validation['Predictions'][0]  # prediction for day
     predicted_percent_increase = predicted_next_day_close / prev_close
-    return predicted_percent_increase
+    print(validation['Predictions'])
+    return float(predicted_percent_increase)

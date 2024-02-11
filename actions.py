@@ -16,10 +16,10 @@ end_amount = 0
     @return number of stocks bought
 """
 def BUY():
+    global ticker, money_spent
     if ticker:
         equity = r.profiles.load_portfolio_profile()['equity']
         # buy stock
-        global money_spent
         buying = r.orders.order_buy_fractional_by_price(symbol=ticker, amountInDollars=equity)
         money_spent = equity
 
@@ -34,11 +34,10 @@ sold and the amount of money in the account.
         (or money in the account)
 """
 def SELL():
+    global ticker, end_amount
     if ticker:
-        global end_amount
         end_amount = r.profiles.load_portfolio_profile()['market_value']
         r.orders.order_sell_fractional_by_price(symbol=ticker, amountInDollars=end_amount)
-    global ticker
     ticker = None
 
 """
@@ -52,16 +51,16 @@ predicted percent increase
 It will set the value of the ticker
 """
 def retrain_model_and_get_next_day_stock():
+    global ticker, predicted_increase
     stocks = {'AAPL': 0, 'MSFT': 0, 'NVDA': 0, 'NBIX': 0, 'DXCM': 0}
     for stock in stocks.keys():
         stocks[stock] = retrain_and_predict(stock)
-    global ticker
-    global predicted_increase
     ticker = max(stocks, key=stocks.get)
     predicted_increase = stocks[ticker]
-    if predicted_increase < 1:
+    if predicted_increase and predicted_increase < 1.0:
         ticker = None
         predicted_increase = None
+    print(stocks, ticker, predicted_increase)
 
 """
 This method makes an API call for the ticker
@@ -72,8 +71,9 @@ call the SELL function.
 @return current price
 """
 def check_price():
+    global predicted_increase
     current_money = r.profiles.load_portfolio_profile()['market_value']
-    if current_money/money_spent >= predicted_increase:
+    if predicted_increase and current_money/money_spent >= predicted_increase:
         SELL()
 
 
@@ -82,4 +82,5 @@ This method saves the daily results into a file
 at the end of the day.
 """
 def daily_results():
+    global money_spent, end_amount
     print('Start cost: ', money_spent, 'ending amount: ', end_amount)
