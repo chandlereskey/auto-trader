@@ -2,9 +2,9 @@ from robin_stocks import robinhood as r
 from lstm_model import retrain_and_predict
 
 # set up global variables
-ticker = None
-predicted_increase = None
-money_spent = 0
+ticker = 'AAPL'
+predicted_increase = 1.01
+money_spent = 11
 end_amount = 0
 
 """
@@ -18,7 +18,8 @@ end_amount = 0
 def BUY():
     global ticker, money_spent
     if ticker:
-        equity = r.profiles.load_portfolio_profile()['equity']
+        equity = float(r.profiles.load_portfolio_profile()['equity'])
+        print('BUYING', equity, 'of', ticker)
         # buy stock
         buying = r.orders.order_buy_fractional_by_price(symbol=ticker, amountInDollars=equity)
         money_spent = equity
@@ -36,8 +37,9 @@ sold and the amount of money in the account.
 def SELL():
     global ticker, end_amount
     if ticker:
-        end_amount = r.profiles.load_portfolio_profile()['market_value']
-        r.orders.order_sell_fractional_by_price(symbol=ticker, amountInDollars=end_amount)
+        end_amount = float(r.profiles.load_portfolio_profile()['market_value'])
+        print('SELLING', end_amount, 'of', ticker)
+        selling = r.orders.order_sell_fractional_by_price(symbol=ticker, amountInDollars=end_amount)
     ticker = None
 
 """
@@ -71,8 +73,9 @@ call the SELL function.
 @return current price
 """
 def check_price():
-    global predicted_increase
-    current_money = r.profiles.load_portfolio_profile()['market_value']
+    global predicted_increase, money_spent
+    current_money = float(r.profiles.load_portfolio_profile()['market_value'])
+    print('checking price: ', current_money)
     if predicted_increase and current_money/money_spent >= predicted_increase:
         SELL()
 
