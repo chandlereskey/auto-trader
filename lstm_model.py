@@ -9,6 +9,8 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from datetime import datetime, timedelta
 
+# CREDIT
+# This code is pretty much a direct copy of https://github.com/teobeeguan/Python-For-Finance/blob/main/Predict%20Stock%20Price%20Using%20LSTM/stock_price_lstm.ipynb
 
 def retrain_and_predict(ticker):
     tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
