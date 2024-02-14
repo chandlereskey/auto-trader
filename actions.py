@@ -2,19 +2,11 @@ from robin_stocks import robinhood as r
 from lstm_model import retrain_and_predict
 
 # set up global variables
-ticker = 'AAPL'
-predicted_increase = 1.01
-money_spent = 11
-end_amount = 0
+ticker = None
+predicted_increase = 0.0
+money_spent = 0.0
+end_amount = 0.0
 
-"""
-    This method takes a stock ticker and the
-    current amount of money available in robinhood
-    
-    @param ticker: ticker string
-    @param available_money: integer value of money
-    @return number of stocks bought
-"""
 def BUY():
     global ticker, money_spent
     if ticker:
@@ -25,15 +17,6 @@ def BUY():
         money_spent = equity
 
 
-"""
-This method takes the ticker value for the day. 
-It returns the time 
-sold and the amount of money in the account.
-
-@param ticker: this is stock ticker value for the day
-@return returns the time sold and the amount sold for 
-        (or money in the account)
-"""
 def SELL():
     global ticker, end_amount
     if ticker:
@@ -43,14 +26,12 @@ def SELL():
     ticker = None
 
 """
-This method retrains the model based on the 
-current day's results and reruns the model to get
-following day prediction.
+This method trains the model on hostoric data
+then makes a prediction and gets the predicted
+percent gain for the following day's closing price.
 
-This will run the model on each stock ticker and get the
-predicted percent increase
-
-It will set the value of the ticker
+It runs for each stock in stocks then sets ticker 
+and the predicted increase values.
 """
 def retrain_model_and_get_next_day_stock():
     global ticker, predicted_increase
@@ -65,17 +46,15 @@ def retrain_model_and_get_next_day_stock():
     print(stocks, ticker, predicted_increase)
 
 """
-This method makes an API call for the ticker
-passed in. If the price has reached a threshold then will 
+This method makes an API call to get the 
+current market value of the account. 
+If the price has reached a threshold then will 
 call the SELL function.
-
-@param ticker: this is stock ticker value for the day
-@return current price
 """
 def check_price():
     global predicted_increase, money_spent
     current_money = float(r.profiles.load_portfolio_profile()['market_value'])
-    print('checking price: ', current_money)
+    print('checking price: ', current_money, 'current % increase: ', current_money/money_spent)
     if predicted_increase and current_money/money_spent >= predicted_increase:
         SELL()
 
@@ -86,4 +65,4 @@ at the end of the day.
 """
 def daily_results():
     global money_spent, end_amount
-    print('Start cost: ', money_spent, 'ending amount: ', end_amount)
+    print('Start cost: ', money_spent, 'ending amount: ', end_amount, 'money gained: ', end_amount - money_spent)
