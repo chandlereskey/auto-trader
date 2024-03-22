@@ -1,2 +1,2 @@
 # auto-trader
-Automatic Stock Trading powered by PyTorch LSTM
+Automatic Stock Trading powered by LSTM model.
