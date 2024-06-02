@@ -26,7 +26,7 @@ def retrain_and_predict(ticker):
 
     close_prices = stock_data['Close']
     values = close_prices.values
-    training_data_len = math.ceil(len(values) - 1)
+    training_data_len = len(values) - 1
 
     scaler = MinMaxScaler(feature_range=(0, 1))
     scaled_data = scaler.fit_transform(values.reshape(-1, 1))
@@ -62,7 +62,7 @@ def retrain_and_predict(ticker):
     model.summary()
 
     model.compile(optimizer='adam', loss='mean_squared_error')
-    model.fit(x_train, y_train, batch_size=1, epochs=3)
+    model.fit(x_train, y_train, batch_size=1, epochs=14) # seems to be the best loss with 14 epochs but takes a good amount of time
 
     predictions = model.predict(x_test)
     predictions = scaler.inverse_transform(predictions)
